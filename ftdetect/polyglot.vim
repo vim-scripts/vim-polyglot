@@ -12,6 +12,7 @@ endfunction
 autocmd BufNewFile,BufRead * call s:DetectCoffee()
 au BufRead,BufNewFile *.csv,*.dat,*.tsv,*.tab set filetype=csv
 autocmd BufNewFile,BufReadPost *.feature,*.story set filetype=cucumber
+au BufNewFile,BufRead Dockerfile set filetype=dockerfile
 au BufRead,BufNewFile *.ex,*.exs set filetype=elixir
 au FileType elixir setl sw=2 sts=2 et iskeyword+=!,?
 autocmd BufNewFile,BufRead *.git/{,modules/**/}{COMMIT_EDIT,MERGE_}MSG set ft=gitcommit
@@ -104,6 +105,7 @@ au BufNewFile,BufRead *.jbuilder		set filetype=ruby
 au BufNewFile,BufRead Puppetfile		set filetype=ruby
 au BufNewFile,BufRead [Bb]uildfile		set filetype=ruby
 au BufNewFile,BufRead Appraisals		set filetype=ruby
+au BufRead,BufNewFile *.rs,*.rc set filetype=rust
 au BufRead,BufNewFile *.sbt set filetype=sbt
 fun! s:DetectScala()
     if getline(1) == '#!/usr/bin/env scala'
@@ -119,3 +121,4 @@ au BufRead,BufNewFile *.textile set filetype=textile
 autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
 autocmd BufNewFile,BufRead *.twig set filetype=twig
 autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
+autocmd BufNewFile,BufRead *.ts setlocal filetype=typescript
