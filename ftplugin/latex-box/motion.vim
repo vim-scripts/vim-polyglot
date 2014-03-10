@@ -312,7 +312,7 @@ function! s:ReadTOC(auxfile, texfile, ...)
 		if included != ''
 			" append the input TOX to `toc` and `fileindices`
 			let newaux = prefix . '/' . included
-			let newtex = fnamemodify(fnamemodify(newaux, ':t:r') . '.tex', ':p')
+			let newtex = fnamemodify(newaux, ':r') . '.tex'
 			call s:ReadTOC(newaux, newtex, toc, fileindices)
 			continue
 		endif
@@ -344,10 +344,11 @@ function! s:ReadTOC(auxfile, texfile, ...)
 			let page = ''
 		endif
 		" parse section number
+		let secnum = ''
 		if len(tree[1]) > 3 && empty(tree[1][1])
 			call remove(tree[1], 1)
 		endif
-		if len(tree[1]) > 1
+		if len(tree[1]) > 1 && tree[1][0] =~ '\(numberline\|tocsection\)'
 			if !empty(tree[1][1])
 				let secnum = LatexBox_TreeToTex(tree[1][1])
 				let secnum = substitute(secnum, '\\\S\+\s', '', 'g')
@@ -356,12 +357,12 @@ function! s:ReadTOC(auxfile, texfile, ...)
 			endif
 			let tree = tree[1][2:]
 		else
-			let secnum = ''
 			let tree = tree[1]
 		endif
 		" parse section title
 		let text = LatexBox_TreeToTex(tree)
 		let text = substitute(text, '^{\+\|}\+$', '', 'g')
+		let text = substitute(text, '\*',         '', 'g')
 
 		" add TOC entry
 		call add(fileindices[texfile], len(toc))
@@ -436,27 +437,30 @@ endfunction
 function! s:FindClosestSection(toc, fileindices)
 	let file = expand('%:p')
 	if !has_key(a:fileindices, file)
-		echoe 'Current file is not included in main tex file ' . LatexBox_GetMainTexFile() . '.'
+		return 0
 	endif
 
 	let imax = len(a:fileindices[file])
-	let imin = 0
-	while imin < imax - 1
-		let i = (imax + imin) / 2
-		let tocindex = a:fileindices[file][i]
-		let entry = a:toc[tocindex]
-		let titlestr = entry['text']
-		let titlestr = escape(titlestr, '\')
-		let titlestr = substitute(titlestr, ' ', '\\_\\s\\+', 'g')
-		let [lnum, cnum] = searchpos('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'nW')
-		if lnum
-			let imax = i
-		else
-			let imin = i
-		endif
-	endwhile
-
-	return a:fileindices[file][imin]
+	if imax > 0
+		let imin = 0
+		while imin < imax - 1
+			let i = (imax + imin) / 2
+			let tocindex = a:fileindices[file][i]
+			let entry = a:toc[tocindex]
+			let titlestr = entry['text']
+			let titlestr = escape(titlestr, '\')
+			let titlestr = substitute(titlestr, ' ', '\\_\\s\\+', 'g')
+			let [lnum, cnum] = searchpos('\\' . entry['level'] . '\_\s*{' . titlestr . '}', 'nW')
+			if lnum
+				let imax = i
+			else
+				let imin = i
+			endif
+		endwhile
+		return a:fileindices[file][imin]
+	else
+		return 0
+	endif
 endfunction
 
 let s:ConvBackPats = map([

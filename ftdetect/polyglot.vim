@@ -1,5 +1,5 @@
 au BufRead,BufNewFile *.ino,*.pde set filetype=arduino
-au BufNewFile,BufRead *.clj,*.cljs,*.edn		setf clojure
+autocmd BufNewFile,BufRead *.clj,*.cljs,*.edn setlocal filetype=clojure
 autocmd BufNewFile,BufRead *.coffee set filetype=coffee
 autocmd BufNewFile,BufRead *Cakefile set filetype=coffee
 autocmd BufNewFile,BufRead *.coffeekup,*.ck set filetype=coffee
@@ -20,10 +20,7 @@ autocmd BufNewFile,BufRead *.git/config,.gitconfig,.gitmodules set ft=gitconfig
 autocmd BufNewFile,BufRead */.config/git/config                set ft=gitconfig
 autocmd BufNewFile,BufRead *.git/modules/**/config             set ft=gitconfig
 autocmd BufNewFile,BufRead git-rebase-todo                     set ft=gitrebase
-autocmd BufNewFile,BufRead .msg.[0-9]*
-      \ if getline(1) =~ '^From.*# This line is ignored.$' |
-      \   set ft=gitsendemail |
-      \ endif
+autocmd BufNewFile,BufRead .gitsendemail.*                     set ft=gitsendemail
 autocmd BufNewFile,BufRead *.git/**
       \ if getline(1) =~ '^\x\{40\}\>\|^ref: ' |
       \   set ft=git |
@@ -50,13 +47,9 @@ au BufReadPost *.go call s:gofiletype_post()
 autocmd BufNewFile,BufRead *.haml,*.hamlbars setf haml
 autocmd BufNewFile,BufRead *.sass setf sass
 autocmd BufNewFile,BufRead *.scss setf scss
-if has("autocmd")
-  au BufNewFile,BufRead *.{handlebars,hb,hbs,hbt}{,.erb} set ft=html syntax=handlebars | runtime! ftplugin/handlebars.vim ftplugin/handlebars*.vim ftplugin/handlebars/*.vim
-endif
 autocmd BufNewFile,BufReadPost *.jade set filetype=jade
 au BufNewFile,BufRead *.js setf javascript
 au BufNewFile,BufRead *.jsm setf javascript
-au BufNewFile,BufRead *.json setf javascript
 au BufNewFile,BufRead Jakefile setf javascript
 fun! s:SelectJavascript()
   if getline(1) =~# '^#!.*/bin/env\s\+node\>'
@@ -81,11 +74,18 @@ autocmd BufNewFile,BufRead *.markdown,*.md,*.mdown,*.mkd,*.mkdn
       \ else |
       \   setf markdown |
       \ endif
+autocmd BufRead *.html
+    \ if getline(1) =~ '^\(%\|<[%&].*>\)' |
+    \     set filetype=mason |
+    \ endif
+if has("autocmd")
+  au  BufNewFile,BufRead *.mustache,*.handlebars,*.hbs,*.hogan,*.hulk,*.hjs set filetype=html syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
+endif
 au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/*,*/nginx/vhosts.d/*,nginx.conf if &ft == '' | setfiletype nginx | endif
 autocmd BufNewFile,BufRead *.proto setfiletype proto
 au BufRead,BufNewFile *.pp              set filetype=puppet
 au BufNewFile,BufRead *.rb,*.rbw,*.gemspec	set filetype=ruby
-au BufNewFile,BufRead *.builder,*.rxml,*.rjs	set filetype=ruby
+au BufNewFile,BufRead *.builder,*.rxml,*.rjs,*.ruby	set filetype=ruby
 au BufNewFile,BufRead [rR]akefile,*.rake	set filetype=ruby
 au BufNewFile,BufRead [rR]antfile,*.rant	set filetype=ruby
 au BufNewFile,BufRead .irbrc,irbrc		set filetype=ruby
@@ -105,7 +105,8 @@ au BufNewFile,BufRead *.jbuilder		set filetype=ruby
 au BufNewFile,BufRead Puppetfile		set filetype=ruby
 au BufNewFile,BufRead [Bb]uildfile		set filetype=ruby
 au BufNewFile,BufRead Appraisals		set filetype=ruby
-au BufRead,BufNewFile *.rs,*.rc set filetype=rust
+au BufNewFile,BufRead Podfile,*.podspec		set filetype=ruby
+au BufRead,BufNewFile *.rs set filetype=rust
 au BufRead,BufNewFile *.sbt set filetype=sbt
 fun! s:DetectScala()
     if getline(1) == '#!/usr/bin/env scala'
@@ -114,7 +115,7 @@ fun! s:DetectScala()
 endfun
 au BufRead,BufNewFile *.scala,*.sbt set filetype=scala
 au BufRead,BufNewFile * call s:DetectScala()
-autocmd BufNewFile,BufRead *.slim setf slim
+autocmd BufNewFile,BufRead *.slim set filetype=slim
 autocmd BufNewFile,BufReadPost *.styl set filetype=stylus
 autocmd BufNewFile,BufReadPost *.stylus set filetype=stylus
 au BufRead,BufNewFile *.textile set filetype=textile
