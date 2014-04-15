@@ -1,9 +1,7 @@
 This is a mirror of http://www.vim.org/scripts/script.php?script_id=4721
 
-A solid yet lightweight language pack for Vim.
 
-As plugin evolves really quickly, I found updating releases here very time consuming,
-unfortunately vim.org doesn't allow for removing already added plugins.
+A solid yet lightweight language pack for Vim.
 
 Please visit source repository for installation instructions and releases in .zip format.
 I'll try to post here updates only for major releases, though.

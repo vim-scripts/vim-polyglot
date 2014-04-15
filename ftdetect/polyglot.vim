@@ -15,7 +15,9 @@ autocmd BufNewFile,BufReadPost *.feature,*.story set filetype=cucumber
 au BufNewFile,BufRead Dockerfile set filetype=dockerfile
 au BufRead,BufNewFile *.ex,*.exs set filetype=elixir
 au FileType elixir setl sw=2 sts=2 et iskeyword+=!,?
-autocmd BufNewFile,BufRead *.git/{,modules/**/}{COMMIT_EDIT,MERGE_}MSG set ft=gitcommit
+autocmd BufNewFile,BufRead *.em set filetype=ember-script
+autocmd FileType ember-script set tabstop=2|set shiftwidth=2|set expandtab
+autocmd BufNewFile,BufRead *.git/{,modules/**/}{COMMIT_EDIT,TAG_EDIT,MERGE_,}MSG set ft=gitcommit
 autocmd BufNewFile,BufRead *.git/config,.gitconfig,.gitmodules set ft=gitconfig
 autocmd BufNewFile,BufRead */.config/git/config                set ft=gitconfig
 autocmd BufNewFile,BufRead *.git/modules/**/config             set ft=gitconfig
@@ -44,10 +46,11 @@ endfunction
 au BufNewFile *.go setlocal filetype=go fileencoding=utf-8 fileformat=unix
 au BufRead *.go call s:gofiletype_pre()
 au BufReadPost *.go call s:gofiletype_post()
-autocmd BufNewFile,BufRead *.haml,*.hamlbars setf haml
+autocmd BufNewFile,BufRead *.haml,*.hamlbars,*.hamlc setf haml
 autocmd BufNewFile,BufRead *.sass setf sass
 autocmd BufNewFile,BufRead *.scss setf scss
 autocmd BufNewFile,BufReadPost *.jade set filetype=jade
+autocmd BufNewFile,BufRead *Spec.js,*_spec.js set filetype=jasmine.javascript syntax=jasmine
 au BufNewFile,BufRead *.js setf javascript
 au BufNewFile,BufRead *.jsm setf javascript
 au BufNewFile,BufRead Jakefile setf javascript
@@ -82,30 +85,36 @@ if has("autocmd")
   au  BufNewFile,BufRead *.mustache,*.handlebars,*.hbs,*.hogan,*.hulk,*.hjs set filetype=html syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
 endif
 au BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/*,*/nginx/vhosts.d/*,nginx.conf if &ft == '' | setfiletype nginx | endif
+au BufRead,BufNewFile *.cl set filetype=opencl
 autocmd BufNewFile,BufRead *.proto setfiletype proto
-au BufRead,BufNewFile *.pp              set filetype=puppet
-au BufNewFile,BufRead *.rb,*.rbw,*.gemspec	set filetype=ruby
-au BufNewFile,BufRead *.builder,*.rxml,*.rjs,*.ruby	set filetype=ruby
-au BufNewFile,BufRead [rR]akefile,*.rake	set filetype=ruby
-au BufNewFile,BufRead [rR]antfile,*.rant	set filetype=ruby
-au BufNewFile,BufRead .irbrc,irbrc		set filetype=ruby
-au BufNewFile,BufRead .pryrc			set filetype=ruby
-au BufNewFile,BufRead *.ru			set filetype=ruby
-au BufNewFile,BufRead Capfile			set filetype=ruby
-au BufNewFile,BufRead Gemfile			set filetype=ruby
-au BufNewFile,BufRead Guardfile,.Guardfile	set filetype=ruby
-au BufNewFile,BufRead Cheffile			set filetype=ruby
-au BufNewFile,BufRead Berksfile			set filetype=ruby
-au BufNewFile,BufRead [vV]agrantfile		set filetype=ruby
-au BufNewFile,BufRead .autotest			set filetype=ruby
-au BufNewFile,BufRead *.erb,*.rhtml		set filetype=eruby
-au BufNewFile,BufRead [tT]horfile,*.thor	set filetype=ruby
-au BufNewFile,BufRead *.rabl			set filetype=ruby
-au BufNewFile,BufRead *.jbuilder		set filetype=ruby
-au BufNewFile,BufRead Puppetfile		set filetype=ruby
-au BufNewFile,BufRead [Bb]uildfile		set filetype=ruby
-au BufNewFile,BufRead Appraisals		set filetype=ruby
-au BufNewFile,BufRead Podfile,*.podspec		set filetype=ruby
+au! BufRead,BufNewFile *.pp setfiletype puppet
+function! s:setf(filetype) abort
+  if &filetype !=# a:filetype
+    let &filetype = a:filetype
+  endif
+endfunction
+au BufNewFile,BufRead *.rb,*.rbw,*.gemspec	call s:setf('ruby')
+au BufNewFile,BufRead *.builder,*.rxml,*.rjs,*.ruby call s:setf('ruby')
+au BufNewFile,BufRead [rR]akefile,*.rake	call s:setf('ruby')
+au BufNewFile,BufRead [rR]antfile,*.rant	call s:setf('ruby')
+au BufNewFile,BufRead .irbrc,irbrc		call s:setf('ruby')
+au BufNewFile,BufRead .pryrc			call s:setf('ruby')
+au BufNewFile,BufRead *.ru			call s:setf('ruby')
+au BufNewFile,BufRead Capfile			call s:setf('ruby')
+au BufNewFile,BufRead Gemfile			call s:setf('ruby')
+au BufNewFile,BufRead Guardfile,.Guardfile	call s:setf('ruby')
+au BufNewFile,BufRead Cheffile			call s:setf('ruby')
+au BufNewFile,BufRead Berksfile			call s:setf('ruby')
+au BufNewFile,BufRead [vV]agrantfile		call s:setf('ruby')
+au BufNewFile,BufRead .autotest			call s:setf('ruby')
+au BufNewFile,BufRead *.erb,*.rhtml		call s:setf('eruby')
+au BufNewFile,BufRead [tT]horfile,*.thor	call s:setf('ruby')
+au BufNewFile,BufRead *.rabl			call s:setf('ruby')
+au BufNewFile,BufRead *.jbuilder		call s:setf('ruby')
+au BufNewFile,BufRead Puppetfile		call s:setf('ruby')
+au BufNewFile,BufRead [Bb]uildfile		call s:setf('ruby')
+au BufNewFile,BufRead Appraisals		call s:setf('ruby')
+au BufNewFile,BufRead Podfile,*.podspec		call s:setf('ruby')
 au BufRead,BufNewFile *.rs set filetype=rust
 au BufRead,BufNewFile *.sbt set filetype=sbt
 fun! s:DetectScala()
@@ -120,6 +129,7 @@ autocmd BufNewFile,BufReadPost *.styl set filetype=stylus
 autocmd BufNewFile,BufReadPost *.stylus set filetype=stylus
 au BufRead,BufNewFile *.textile set filetype=textile
 autocmd BufNewFile,BufRead .tmux.conf*,tmux.conf* setf tmux
+autocmd BufNewFile,BufRead *.toml set filetype=toml
 autocmd BufNewFile,BufRead *.twig set filetype=twig
 autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
 autocmd BufNewFile,BufRead *.ts setlocal filetype=typescript
